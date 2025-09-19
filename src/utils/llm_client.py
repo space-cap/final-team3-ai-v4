@@ -13,18 +13,22 @@ class ClaudeLLMClient:
     """Claude LLM client for template generation and analysis"""
 
     def __init__(
-        self, api_key: Optional[str] = None, model: str = "claude-3-5-haiku-latest"
+        self, api_key: Optional[str] = None, model: Optional[str] = None
     ):
         self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
         if not self.api_key:
             raise ValueError("ANTHROPIC_API_KEY must be provided or set in environment")
 
-        self.model = model
+        # .env에서 모델 설정 로드
+        self.model = model or os.getenv("CLAUDE_MODEL", "claude-3-5-haiku-latest")
+        temperature = float(os.getenv("CLAUDE_TEMPERATURE", "0.3"))
+        max_tokens = int(os.getenv("CLAUDE_MAX_TOKENS", "2000"))
+
         self.llm = ChatAnthropic(
             anthropic_api_key=self.api_key,
             model=self.model,
-            temperature=0.3,
-            max_tokens=2000
+            temperature=temperature,
+            max_tokens=max_tokens
         )
 
     def generate_response(self, system_prompt: str, user_prompt: str) -> str:

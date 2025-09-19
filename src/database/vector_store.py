@@ -10,15 +10,33 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.document_loaders import TextLoader
 import logging
+from dotenv import load_dotenv
+
+# .env 파일 로드
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
 class PolicyVectorStore:
     """Vector store for KakaoTalk policy documents using Chroma"""
 
-    def __init__(self, persist_directory: str = "./chroma_db"):
-        self.persist_directory = persist_directory
-        self.embeddings = OpenAIEmbeddings()
+    def __init__(self, persist_directory: str = None):
+        # .env에서 설정 로드
+        self.persist_directory = persist_directory or os.getenv("VECTOR_DB_PATH", "./chroma_db")
+
+        # 임베딩 모델 설정
+        embedding_model = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+        embedding_provider = os.getenv("EMBEDDING_PROVIDER", "openai")
+
+        if embedding_provider.lower() == "openai":
+            self.embeddings = OpenAIEmbeddings(
+                model=embedding_model,
+                openai_api_key=os.getenv("OPENAI_API_KEY")
+            )
+        else:
+            # 기본값으로 OpenAI 사용
+            self.embeddings = OpenAIEmbeddings(model=embedding_model)
+
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200,
