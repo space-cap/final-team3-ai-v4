@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 class ClaudeLLMClient:
     """Claude LLM client for template generation and analysis"""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-sonnet-20240229"):
+    def __init__(
+        self, api_key: Optional[str] = None, model: str = "claude-3-5-haiku-latest"
+    ):
         self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
         if not self.api_key:
             raise ValueError("ANTHROPIC_API_KEY must be provided or set in environment")
@@ -21,7 +23,7 @@ class ClaudeLLMClient:
         self.llm = ChatAnthropic(
             anthropic_api_key=self.api_key,
             model=self.model,
-            temperature=0.7,
+            temperature=0.3,
             max_tokens=2000
         )
 
