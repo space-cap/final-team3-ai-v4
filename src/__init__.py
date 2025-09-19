@@ -1,0 +1,1 @@
+# KakaoTalk Template Generation Service

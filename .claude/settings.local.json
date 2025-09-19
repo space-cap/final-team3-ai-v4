@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(.venvScriptsactivate)",
+      "Bash(\".venv/Scripts/activate\")",
+      "Bash(pip install:*)",
+      "Bash(python test:*)",
+      "Bash(python:*)",
+      "Bash(timeout 30 python:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
