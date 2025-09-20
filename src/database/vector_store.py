@@ -11,10 +11,14 @@ from dotenv import load_dotenv
 try:
     import chromadb
     from langchain.text_splitter import RecursiveCharacterTextSplitter
-    from langchain.embeddings import OpenAIEmbeddings
-    from langchain.vectorstores import Chroma
-    from langchain.document_loaders import TextLoader
+
+    # Use latest import structure
+    from langchain_openai import OpenAIEmbeddings
+    from langchain_chroma import Chroma
+    from langchain_community.document_loaders import TextLoader
+
     CHROMADB_AVAILABLE = True
+    print("[INFO] ChromaDB and dependencies loaded successfully")
 except ImportError as e:
     print(f"[WARNING] ChromaDB not available: {e}")
     print("[INFO] Vector search features will be disabled")

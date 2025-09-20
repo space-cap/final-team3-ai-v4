@@ -56,7 +56,7 @@ class TemplateGenerationRequest(BaseModel):
     additional_requirements: Optional[str] = Field(None, description="추가 요구사항")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "user_request": "온라인 강의 수강 신청 완료 후 강의 일정을 안내하는 메시지",
                 "business_type": "교육",
@@ -76,7 +76,7 @@ class TemplateValidationRequest(BaseModel):
     button_text: Optional[str] = Field(None, description="버튼 텍스트")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "template_text": "안녕하세요 #{수신자명}님, 강의 신청이 완료되었습니다.",
                 "variables": ["수신자명"],
@@ -148,7 +148,7 @@ class TemplateGenerationResponse(BaseModel):
     detailed_scores: Optional[DetailedScores] = Field(None, description="세부 점수")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "success": True,
                 "template": {

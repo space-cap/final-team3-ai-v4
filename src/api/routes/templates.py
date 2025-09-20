@@ -98,6 +98,20 @@ async def generate_template(
                 }
             )
 
+        # 데이터 완성도 보장
+        result = _ensure_complete_response(result, request)
+
+        # 디버깅: 결과 출력
+        print(f"DEBUG - Final result keys: {result.keys()}")
+        if 'template' in result:
+            print(f"DEBUG - Template keys: {result['template'].keys()}")
+            if 'metadata' in result['template']:
+                print(f"DEBUG - Metadata keys: {result['template']['metadata'].keys()}")
+        if 'compliance' in result:
+            print(f"DEBUG - Compliance keys: {result['compliance'].keys()}")
+        if 'analysis' in result:
+            print(f"DEBUG - Analysis keys: {result['analysis'].keys()}")
+
         return TemplateGenerationResponse(**result)
 
     except HTTPException:
@@ -376,8 +390,8 @@ def _format_simple_result(simple_result: dict, request: TemplateGenerationReques
                     'service_type': '',
                     'estimated_length': 0,
                     'variable_count': 0,
-                    'target_audience': '',
-                    'tone': '',
+                    'target_audience': request.target_audience or '일반',
+                    'tone': request.tone or '정중한',
                     'generation_method': 'simple_workflow'
                 }
             },
@@ -391,9 +405,9 @@ def _format_simple_result(simple_result: dict, request: TemplateGenerationReques
                 'required_changes': []
             },
             'analysis': {
-                'business_type': request.business_type or '',
-                'service_type': request.service_type or '',
-                'message_purpose': '',
+                'business_type': request.business_type or '기타',
+                'service_type': request.service_type or '안내',
+                'message_purpose': '사용자 요청 메시지',
                 'estimated_category': {},
                 'compliance_concerns': []
             },
@@ -421,8 +435,8 @@ def _format_simple_result(simple_result: dict, request: TemplateGenerationReques
                 'service_type': analysis.get('service_type', ''),
                 'estimated_length': len(template.get('template_text', '')),
                 'variable_count': len(template.get('variables', [])),
-                'target_audience': analysis.get('target_audience', ''),
-                'tone': analysis.get('tone', ''),
+                'target_audience': request.target_audience or analysis.get('target_audience', '일반'),
+                'tone': request.tone or analysis.get('tone', '정중한'),
                 'generation_method': 'simple_workflow'
             }
         },
@@ -436,9 +450,9 @@ def _format_simple_result(simple_result: dict, request: TemplateGenerationReques
             'required_changes': compliance.get('required_changes', [])
         },
         'analysis': {
-            'business_type': analysis.get('business_type', ''),
-            'service_type': analysis.get('service_type', ''),
-            'message_purpose': analysis.get('message_purpose', ''),
+            'business_type': analysis.get('business_type', '') or request.business_type or '기타',
+            'service_type': analysis.get('service_type', '') or request.service_type or '안내',
+            'message_purpose': analysis.get('message_purpose', '') or '사용자 요청 메시지',
             'estimated_category': analysis.get('estimated_category', {}),
             'compliance_concerns': analysis.get('compliance_concerns', [])
         },
@@ -448,6 +462,49 @@ def _format_simple_result(simple_result: dict, request: TemplateGenerationReques
             'policy_sources': []
         }
     }
+
+def _ensure_complete_response(result: dict, request: TemplateGenerationRequest) -> dict:
+    """응답 데이터의 완성도를 보장하는 함수"""
+
+    # 템플릿 메타데이터 완성
+    if 'template' in result and 'metadata' in result['template']:
+        metadata = result['template']['metadata']
+
+        # 필수 필드 보장
+        if 'estimated_length' not in metadata:
+            metadata['estimated_length'] = len(result['template'].get('text', ''))
+        if 'variable_count' not in metadata:
+            metadata['variable_count'] = len(result['template'].get('variables', []))
+        if 'target_audience' not in metadata:
+            metadata['target_audience'] = request.target_audience or '일반'
+        if 'tone' not in metadata:
+            metadata['tone'] = request.tone or '정중한'
+        if 'business_type' not in metadata:
+            metadata['business_type'] = request.business_type or '기타'
+        if 'service_type' not in metadata:
+            metadata['service_type'] = request.service_type or '안내'
+        if 'category_1' not in metadata:
+            metadata['category_1'] = '서비스이용'
+        if 'category_2' not in metadata:
+            metadata['category_2'] = '이용안내/공지'
+        if 'generation_method' not in metadata:
+            metadata['generation_method'] = 'ai_generated'
+
+    # 컴플라이언스 정보 완성
+    if 'compliance' in result:
+        compliance = result['compliance']
+        if 'warnings' not in compliance:
+            compliance['warnings'] = []
+        if 'required_changes' not in compliance:
+            compliance['required_changes'] = []
+
+    # 분석 정보 완성
+    if 'analysis' in result:
+        analysis = result['analysis']
+        if 'message_purpose' not in analysis:
+            analysis['message_purpose'] = '사용자 요청 메시지'
+
+    return result
 
 async def log_generation_result(user_request: str, success: bool, processing_time: float):
     """템플릿 생성 결과 로깅 (백그라운드 태스크)"""

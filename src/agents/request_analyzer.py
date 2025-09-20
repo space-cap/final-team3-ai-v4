@@ -183,7 +183,7 @@ class RequestAnalyzerAgent:
 
         # 광고성 키워드 체크
         ad_keywords = ['할인', '이벤트', '프로모션', '혜택', '특가']
-        if any(keyword in user_request for keyword in keywords):
+        if any(keyword in user_request for keyword in ad_keywords):
             concerns.append('광고성 내용 포함 가능성')
 
         # 금지 키워드 체크

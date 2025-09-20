@@ -12,9 +12,16 @@
       "Bash(timeout:*)",
       "Bash(curl:*)",
       "WebSearch",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(tasklist)",
+      "Bash(findstr:*)",
+      "Bash(.venv/Scripts/activate)",
+      "Bash(.venv\\Scripts\\activate)",
+      "Bash(.venvScriptsactivate.bat)",
+      "Bash(.venv/Scripts/python.exe run_server.py:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "outputStyle": "korean-dev"
 }
