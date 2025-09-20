@@ -4,13 +4,21 @@ Vector Database Manager for KakaoTalk Policy Documents
 import os
 import json
 from typing import List, Dict, Any
-import chromadb
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.document_loaders import TextLoader
 import logging
 from dotenv import load_dotenv
+
+# Optional ChromaDB import
+try:
+    import chromadb
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain.embeddings import OpenAIEmbeddings
+    from langchain.vectorstores import Chroma
+    from langchain.document_loaders import TextLoader
+    CHROMADB_AVAILABLE = True
+except ImportError as e:
+    print(f"[WARNING] ChromaDB not available: {e}")
+    print("[INFO] Vector search features will be disabled")
+    CHROMADB_AVAILABLE = False
 
 # .env 파일 로드
 load_dotenv()
@@ -21,6 +29,11 @@ class PolicyVectorStore:
     """Vector store for KakaoTalk policy documents using Chroma"""
 
     def __init__(self, persist_directory: str = None):
+        if not CHROMADB_AVAILABLE:
+            logger.warning("ChromaDB not available. Vector search features disabled.")
+            self.vector_store = None
+            return
+
         # .env에서 설정 로드
         self.persist_directory = persist_directory or os.getenv("VECTOR_DB_PATH", "./chroma_db")
 
@@ -63,6 +76,10 @@ class PolicyVectorStore:
 
     def load_policy_documents(self, policy_dir: str = "data/cleaned_policies"):
         """Load and process policy documents into vector store"""
+        if not CHROMADB_AVAILABLE or not self.vector_store:
+            logger.warning("Vector store not available. Skipping policy document loading.")
+            return
+
         if not os.path.exists(policy_dir):
             raise FileNotFoundError(f"Policy directory not found: {policy_dir}")
 
@@ -124,6 +141,10 @@ class PolicyVectorStore:
 
     def search_relevant_policies(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
         """Search for relevant policy documents"""
+        if not CHROMADB_AVAILABLE or not self.vector_store:
+            logger.warning("Vector search not available. Returning empty results.")
+            return []
+
         try:
             results = self.vector_store.similarity_search_with_score(query, k=k)
 
@@ -143,6 +164,10 @@ class PolicyVectorStore:
 
     def get_policy_by_type(self, policy_type: str, k: int = 10) -> List[Dict[str, Any]]:
         """Get policies by specific type"""
+        if not CHROMADB_AVAILABLE or not self.vector_store:
+            logger.warning("Vector search not available. Returning empty results.")
+            return []
+
         try:
             # Filter by metadata
             results = self.vector_store.similarity_search(
