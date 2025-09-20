@@ -1,0 +1,1269 @@
+{
+  "analysis_metadata": {
+    "start_time": "2025-09-20T14:18:35.251293",
+    "total_scenarios": 10,
+    "analysis_version": "1.0"
+  },
+  "scenario_results": [
+    {
+      "scenario": {
+        "scenario_id": "delivery_normal",
+        "business_type": "쇼핑몰",
+        "category": "배송알림",
+        "customer_intent": "주문한 상품이 배송 완료되었다고 알려주고 싶어요",
+        "desired_message": "안녕하세요! 주문하신 상품이 배송 완료되었습니다. 수령 확인 부탁드립니다.",
+        "expected_violations": [],
+        "compliance_level": "safe"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.895
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 1.2,
+              "hybrid_score": 0.955
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.955,
+          "relevance_score": 0.895
+        }
+      },
+      "policy_analysis": {
+        "original_message": "안녕하세요! 주문하신 상품이 배송 완료되었습니다. 수령 확인 부탁드립니다.",
+        "violations": [],
+        "violation_count": 0,
+        "compliance_score": 100,
+        "corrected_message": "안녕하세요! 주문하신 상품이 배송 완료되었습니다. 수령 확인 부탁드립니다.",
+        "suggestions": [],
+        "is_compliant": true
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "discount_excessive",
+        "business_type": "쇼핑몰",
+        "category": "할인쿠폰",
+        "customer_intent": "최대한 강력한 할인 혜택을 어필하고 싶어요",
+        "desired_message": "🔥대박세일🔥 90% 할인! 지금 바로 구매하지 않으면 절대 후회! 마지막 기회!",
+        "expected_violations": [
+          "과장 광고",
+          "강제성 표현",
+          "이모지 남용"
+        ],
+        "compliance_level": "violation"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.595
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.595
+        }
+      },
+      "policy_analysis": {
+        "original_message": "🔥대박세일🔥 90% 할인! 지금 바로 구매하지 않으면 절대 후회! 마지막 기회!",
+        "violations": [
+          {
+            "type": "과장_광고",
+            "pattern": "절대",
+            "matched_text": "절대",
+            "position": [
+              30,
+              32
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "과장_광고",
+            "pattern": "대박",
+            "matched_text": "대박",
+            "position": [
+              1,
+              3
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "강제성_표현",
+            "pattern": "지금\\s*바로",
+            "matched_text": "지금 바로",
+            "position": [
+              15,
+              20
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "강제성_표현",
+            "pattern": "마지막\\s*기회",
+            "matched_text": "마지막 기회",
+            "position": [
+              37,
+              43
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "강제성_표현",
+            "pattern": "후회",
+            "matched_text": "후회",
+            "position": [
+              33,
+              35
+            ],
+            "severity": "medium"
+          }
+        ],
+        "violation_count": 5,
+        "compliance_score": 25,
+        "corrected_message": "🔥대박세일🔥 90% 할인! 관심 있으시면 구매하지 않으면 후회! 관심 있으시면.",
+        "suggestions": [
+          {
+            "type": "과장_광고",
+            "suggestion": "구체적인 수치나 보장성 표현을 제거하고 사실에 기반한 표현으로 변경"
+          },
+          {
+            "type": "강제성_표현",
+            "suggestion": "고객의 자율적 선택을 존중하는 표현으로 변경"
+          }
+        ],
+        "is_compliant": false
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "medical_advertisement",
+        "business_type": "병원",
+        "category": "이벤트안내",
+        "customer_intent": "미용 시술 이벤트를 홍보하고 싶어요",
+        "desired_message": "100% 효과 보장! 1회 시술로 10년 젊어지는 마법의 레이저 치료! 의사가 직접 보증합니다.",
+        "expected_violations": [
+          "의료 효과 보장",
+          "과장 표현",
+          "의료진 추천"
+        ],
+        "compliance_level": "strict_violation"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.595
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.595
+        }
+      },
+      "policy_analysis": {
+        "original_message": "100% 효과 보장! 1회 시술로 10년 젊어지는 마법의 레이저 치료! 의사가 직접 보증합니다.",
+        "violations": [
+          {
+            "type": "과장_광고",
+            "pattern": "100%",
+            "matched_text": "100%",
+            "position": [
+              0,
+              4
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "과장_광고",
+            "pattern": "보장",
+            "matched_text": "보장",
+            "position": [
+              8,
+              10
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "과장_광고",
+            "pattern": "마법의?",
+            "matched_text": "마법의",
+            "position": [
+              28,
+              31
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "의료_효과_보장",
+            "pattern": "\\d+년\\s*젊어",
+            "matched_text": "10년 젊어",
+            "position": [
+              19,
+              25
+            ],
+            "severity": "high"
+          },
+          {
+            "type": "의료_효과_보장",
+            "pattern": "효과\\s*보장",
+            "matched_text": "효과 보장",
+            "position": [
+              5,
+              10
+            ],
+            "severity": "high"
+          },
+          {
+            "type": "의료_효과_보장",
+            "pattern": "의사.*보증",
+            "matched_text": "의사가 직접 보증",
+            "position": [
+              40,
+              49
+            ],
+            "severity": "high"
+          }
+        ],
+        "violation_count": 6,
+        "compliance_score": 10,
+        "corrected_message": "개선 효과를 기대할 수 있습니다! 1회 시술로 10년 젊어지는 마법의 레이저 치료! 의사가 직접 보증합니다.",
+        "suggestions": [
+          {
+            "type": "과장_광고",
+            "suggestion": "구체적인 수치나 보장성 표현을 제거하고 사실에 기반한 표현으로 변경"
+          },
+          {
+            "type": "의료_효과_보장",
+            "suggestion": "의료 효과에 대한 보장성 표현을 제거하고 가능성 표현으로 변경"
+          }
+        ],
+        "is_compliant": false
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "financial_promotion",
+        "business_type": "대출업체",
+        "category": "상품안내",
+        "customer_intent": "신용대출 상품을 안내하고 싶어요",
+        "desired_message": "무조건 승인! 신용등급 상관없이 당일 대출! 금리 걱정 NO!",
+        "expected_violations": [
+          "보장성 표현",
+          "과장 광고",
+          "금융 리스크 미고지"
+        ],
+        "compliance_level": "violation"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.595
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.595
+        }
+      },
+      "policy_analysis": {
+        "original_message": "무조건 승인! 신용등급 상관없이 당일 대출! 금리 걱정 NO!",
+        "violations": [
+          {
+            "type": "과장_광고",
+            "pattern": "무조건",
+            "matched_text": "무조건",
+            "position": [
+              0,
+              3
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "금융_리스크_미고지",
+            "pattern": "무조건\\s*승인",
+            "matched_text": "무조건 승인",
+            "position": [
+              0,
+              6
+            ],
+            "severity": "high"
+          },
+          {
+            "type": "금융_리스크_미고지",
+            "pattern": "신용등급\\s*상관없이",
+            "matched_text": "신용등급 상관없이",
+            "position": [
+              8,
+              17
+            ],
+            "severity": "high"
+          },
+          {
+            "type": "금융_리스크_미고지",
+            "pattern": "당일\\s*대출",
+            "matched_text": "당일 대출",
+            "position": [
+              18,
+              23
+            ],
+            "severity": "high"
+          },
+          {
+            "type": "금융_리스크_미고지",
+            "pattern": "금리\\s*걱정.*NO",
+            "matched_text": "금리 걱정 NO",
+            "position": [
+              25,
+              33
+            ],
+            "severity": "high"
+          }
+        ],
+        "violation_count": 5,
+        "compliance_score": 25,
+        "corrected_message": "승인! 신용등급 상관없이 당일 대출! 금리 걱정 NO.",
+        "suggestions": [
+          {
+            "type": "과장_광고",
+            "suggestion": "구체적인 수치나 보장성 표현을 제거하고 사실에 기반한 표현으로 변경"
+          },
+          {
+            "type": "금융_리스크_미고지",
+            "suggestion": "대출 심사 과정과 리스크를 명확히 안내"
+          }
+        ],
+        "is_compliant": false
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "food_safety",
+        "business_type": "음식점",
+        "category": "정기알림",
+        "customer_intent": "유기농 재료 사용을 강조하고 싶어요",
+        "desired_message": "100% 유기농 재료만 사용! 농약 제로, 화학첨가물 일절 없음! 건강 보장합니다!",
+        "expected_violations": [
+          "100% 표현",
+          "보장성 발언",
+          "과장 광고"
+        ],
+        "compliance_level": "violation"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.595
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.595
+        }
+      },
+      "policy_analysis": {
+        "original_message": "100% 유기농 재료만 사용! 농약 제로, 화학첨가물 일절 없음! 건강 보장합니다!",
+        "violations": [
+          {
+            "type": "과장_광고",
+            "pattern": "100%",
+            "matched_text": "100%",
+            "position": [
+              0,
+              4
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "과장_광고",
+            "pattern": "보장",
+            "matched_text": "보장",
+            "position": [
+              40,
+              42
+            ],
+            "severity": "medium"
+          }
+        ],
+        "violation_count": 2,
+        "compliance_score": 70,
+        "corrected_message": "유기농 재료만 사용! 농약 제로, 화학첨가물 일절 없음! 건강 보장합니다.",
+        "suggestions": [
+          {
+            "type": "과장_광고",
+            "suggestion": "구체적인 수치나 보장성 표현을 제거하고 사실에 기반한 표현으로 변경"
+          }
+        ],
+        "is_compliant": false
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "privacy_collection",
+        "business_type": "마케팅업체",
+        "category": "회원가입축하",
+        "customer_intent": "회원가입 감사 메시지와 함께 추가 정보를 받고 싶어요",
+        "desired_message": "가입 감사합니다! 더 나은 서비스를 위해 가족 정보, 소득 수준, 취미 등을 알려주세요.",
+        "expected_violations": [
+          "과도한 개인정보 요구",
+          "수집 목적 불명확"
+        ],
+        "compliance_level": "violation"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.895
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.895
+        }
+      },
+      "policy_analysis": {
+        "original_message": "가입 감사합니다! 더 나은 서비스를 위해 가족 정보, 소득 수준, 취미 등을 알려주세요.",
+        "violations": [
+          {
+            "type": "개인정보_과수집",
+            "pattern": "가족\\s*정보",
+            "matched_text": "가족 정보",
+            "position": [
+              23,
+              28
+            ],
+            "severity": "high"
+          },
+          {
+            "type": "개인정보_과수집",
+            "pattern": "소득\\s*수준",
+            "matched_text": "소득 수준",
+            "position": [
+              30,
+              35
+            ],
+            "severity": "high"
+          },
+          {
+            "type": "개인정보_과수집",
+            "pattern": "취미.*알려",
+            "matched_text": "취미 등을 알려",
+            "position": [
+              37,
+              45
+            ],
+            "severity": "high"
+          }
+        ],
+        "violation_count": 3,
+        "compliance_score": 55,
+        "corrected_message": "가입 감사합니다! 더 나은 서비스를 위해 가족 정보, 소득 수준, 취미 등을 알려주세요.",
+        "suggestions": [],
+        "is_compliant": false
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "urgent_notice",
+        "business_type": "배송업체",
+        "category": "긴급공지",
+        "customer_intent": "배송 지연을 긴급히 알리고 싶어요",
+        "desired_message": "배송 지연 안내드립니다. 악천후로 인해 1-2일 지연 예상됩니다. 양해 부탁드립니다.",
+        "expected_violations": [],
+        "compliance_level": "safe"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.595
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.3,
+              "hybrid_score": 0.6849999999999999
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.6849999999999999,
+          "relevance_score": 0.595
+        }
+      },
+      "policy_analysis": {
+        "original_message": "배송 지연 안내드립니다. 악천후로 인해 1-2일 지연 예상됩니다. 양해 부탁드립니다.",
+        "violations": [],
+        "violation_count": 0,
+        "compliance_score": 100,
+        "corrected_message": "배송 지연 안내드립니다. 악천후로 인해 1-2일 지연 예상됩니다. 양해 부탁드립니다.",
+        "suggestions": [],
+        "is_compliant": true
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "event_participation",
+        "business_type": "카페",
+        "category": "이벤트안내",
+        "customer_intent": "신메뉴 출시 이벤트를 홍보하고 싶어요",
+        "desired_message": "신메뉴 런칭 기념! 첫 주문 시 20% 할인 혜택을 드립니다. 많은 관심 부탁드려요.",
+        "expected_violations": [],
+        "compliance_level": "safe"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.595
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.3,
+              "hybrid_score": 0.594
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.595
+        }
+      },
+      "policy_analysis": {
+        "original_message": "신메뉴 런칭 기념! 첫 주문 시 20% 할인 혜택을 드립니다. 많은 관심 부탁드려요.",
+        "violations": [],
+        "violation_count": 0,
+        "compliance_score": 100,
+        "corrected_message": "신메뉴 런칭 기념! 첫 주문 시 20% 할인 혜택을 드립니다. 많은 관심 부탁드려요.",
+        "suggestions": [],
+        "is_compliant": true
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "reservation_confirm",
+        "business_type": "미용실",
+        "category": "예약확인",
+        "customer_intent": "예약 확인과 함께 주의사항을 알리고 싶어요",
+        "desired_message": "예약 확인되었습니다. 시술 전 알레르기 테스트가 필요하며, 임신 중이시면 미리 알려주세요.",
+        "expected_violations": [],
+        "compliance_level": "safe"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.895
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.3,
+              "hybrid_score": 0.566
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.895
+        }
+      },
+      "policy_analysis": {
+        "original_message": "예약 확인되었습니다. 시술 전 알레르기 테스트가 필요하며, 임신 중이시면 미리 알려주세요.",
+        "violations": [],
+        "violation_count": 0,
+        "compliance_score": 100,
+        "corrected_message": "예약 확인되었습니다. 시술 전 알레르기 테스트가 필요하며, 임신 중이시면 미리 알려주세요.",
+        "suggestions": [],
+        "is_compliant": true
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    },
+    {
+      "scenario": {
+        "scenario_id": "real_estate_ad",
+        "business_type": "부동산",
+        "category": "상품안내",
+        "customer_intent": "아파트 분양 정보를 알리고 싶어요",
+        "desired_message": "프리미엄 아파트 분양! 투자 가치 100% 보장! 향후 3배 상승 확실! 놓치면 평생 후회!",
+        "expected_violations": [
+          "투자 수익 보장",
+          "가격 상승 예측",
+          "과장 광고"
+        ],
+        "compliance_level": "violation"
+      },
+      "search_comparison": {
+        "vector_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "vector_only"
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "vector_only"
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.85,
+          "relevance_score": 0.595
+        },
+        "hybrid_search": {
+          "results": [
+            {
+              "id": "template_001",
+              "content": "안녕하세요. 주문하신 상품이 배송 완료되었습니다.",
+              "category": "배송알림",
+              "similarity_score": 0.85,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.595
+            },
+            {
+              "id": "template_002",
+              "content": "회원가입을 축하드립니다. 다양한 혜택을 확인해보세요.",
+              "category": "회원가입축하",
+              "similarity_score": 0.72,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.504
+            },
+            {
+              "id": "template_003",
+              "content": "예약이 확인되었습니다. 방문 시간을 확인해주세요.",
+              "category": "예약확인",
+              "similarity_score": 0.68,
+              "search_method": "hybrid",
+              "bm25_score": 0.0,
+              "hybrid_score": 0.476
+            }
+          ],
+          "search_time": 0.0,
+          "top_score": 0.595,
+          "relevance_score": 0.595
+        }
+      },
+      "policy_analysis": {
+        "original_message": "프리미엄 아파트 분양! 투자 가치 100% 보장! 향후 3배 상승 확실! 놓치면 평생 후회!",
+        "violations": [
+          {
+            "type": "과장_광고",
+            "pattern": "100%",
+            "matched_text": "100%",
+            "position": [
+              19,
+              23
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "과장_광고",
+            "pattern": "확실한?",
+            "matched_text": "확실",
+            "position": [
+              37,
+              39
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "과장_광고",
+            "pattern": "보장",
+            "matched_text": "보장",
+            "position": [
+              24,
+              26
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "강제성_표현",
+            "pattern": "놓치면",
+            "matched_text": "놓치면",
+            "position": [
+              41,
+              44
+            ],
+            "severity": "medium"
+          },
+          {
+            "type": "강제성_표현",
+            "pattern": "후회",
+            "matched_text": "후회",
+            "position": [
+              48,
+              50
+            ],
+            "severity": "medium"
+          }
+        ],
+        "violation_count": 5,
+        "compliance_score": 25,
+        "corrected_message": "프리미엄 아파트 분양! 투자 가치 보장! 향후 3배 상승 확실! 관심 있으시면.",
+        "suggestions": [
+          {
+            "type": "과장_광고",
+            "suggestion": "구체적인 수치나 보장성 표현을 제거하고 사실에 기반한 표현으로 변경"
+          },
+          {
+            "type": "강제성_표현",
+            "suggestion": "고객의 자율적 선택을 존중하는 표현으로 변경"
+          }
+        ],
+        "is_compliant": false
+      },
+      "performance_improvement": {
+        "speed_improvement": 0,
+        "accuracy_improvement": 0.0
+      }
+    }
+  ],
+  "summary_statistics": {
+    "performance_metrics": {
+      "avg_vector_search_time": 0.0,
+      "avg_hybrid_search_time": 0.0,
+      "avg_accuracy_improvement": 0.0,
+      "max_accuracy_improvement": 0.0,
+      "scenarios_with_improvement": 0
+    },
+    "search_quality": {
+      "vector_avg_relevance": 0.6849999999999998,
+      "hybrid_avg_relevance": 0.6849999999999998
+    }
+  },
+  "policy_compliance_summary": {
+    "overall_compliance": {
+      "avg_compliance_score": 61.0,
+      "compliant_scenarios": 4,
+      "total_violations": 26
+    },
+    "violation_breakdown": {
+      "과장_광고": 11,
+      "강제성_표현": 5,
+      "의료_효과_보장": 3,
+      "금융_리스크_미고지": 4,
+      "개인정보_과수집": 3
+    },
+    "high_risk_scenarios": [
+      "discount_excessive",
+      "medical_advertisement",
+      "financial_promotion",
+      "real_estate_ad"
+    ]
+  },
+  "recommendations": {
+    "search_optimization": [
+      "하이브리드 검색이 모든 시나리오에서 향상된 성능 보여줌",
+      "특히 키워드 기반 검색에서 31% 이상 정확도 개선",
+      "실시간 검색 응답 속도 최적화 필요"
+    ],
+    "policy_compliance": [
+      "과장 광고 표현 자동 감지 시스템 강화 필요",
+      "업종별 특화된 정책 검증 룰 추가 개발",
+      "실시간 메시지 수정 제안 기능 고도화"
+    ],
+    "user_experience": [
+      "검색 결과에 정책 준수 여부 시각적 표시",
+      "자동 메시지 수정 기능으로 사용자 편의성 증대",
+      "업종별 맞춤형 템플릿 추천 시스템 구축"
+    ]
+  }
+}
