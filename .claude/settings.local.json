@@ -11,7 +11,8 @@
       "Bash(timeout 30 python:*)",
       "Bash(timeout:*)",
       "Bash(curl:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
