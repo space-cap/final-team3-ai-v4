@@ -18,6 +18,7 @@ from ..agents.template_generator import TemplateGeneratorAgent
 from ..agents.compliance_checker import ComplianceCheckerAgent
 from ..agents.policy_rag import PolicyRAGAgent
 from ..utils.llm_client import ClaudeLLMClient
+from ..utils.performance_monitor import WorkflowPerformanceMonitor, get_performance_monitor, cleanup_performance_monitor
 from ..database.vector_store import PolicyVectorStore, TemplateStore
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,7 @@ class KakaoTemplateWorkflow:
 
     def __init__(self, config: WorkflowConfig = None):
         self.config = config or WorkflowConfig()
+        self.performance_monitor = None
         self.setup_agents()
         self.setup_workflow()
 
@@ -131,6 +133,9 @@ class KakaoTemplateWorkflow:
         """워크플로우 실행"""
         logger.info(f"Starting workflow for request: {user_request[:100]}...")
 
+        # 성능 모니터 초기화
+        self.performance_monitor = get_performance_monitor(session_id)
+
         initial_state = WorkflowState(
             user_request=user_request,
             analysis_result={},
@@ -143,18 +148,26 @@ class KakaoTemplateWorkflow:
         )
 
         try:
-            if self.workflow:
-                # LangGraph 사용
-                config = {"configurable": {"thread_id": session_id}}
-                result = self.workflow.invoke(initial_state, config)
-                return self._format_final_result(result)
-            else:
-                # 수동 워크플로우
-                return self._run_manual_workflow(initial_state)
+            with self.performance_monitor.measure_step("total_workflow", {"request_length": len(user_request)}):
+                if self.workflow:
+                    # LangGraph 사용
+                    config = {"configurable": {"thread_id": session_id}}
+                    result = self.workflow.invoke(initial_state, config)
+                    final_result = self._format_final_result(result)
+                else:
+                    # 수동 워크플로우
+                    final_result = self._run_manual_workflow(initial_state)
+
+                # 성능 데이터를 결과에 포함
+                final_result['performance'] = self.performance_monitor.export_to_dict()
+                return final_result
 
         except Exception as e:
             logger.error(f"Workflow execution failed: {e}")
             return self._get_error_result(str(e))
+        finally:
+            # 성능 모니터 정리
+            cleanup_performance_monitor(session_id)
 
     def _run_manual_workflow(self, state: WorkflowState) -> Dict[str, Any]:
         """수동 워크플로우 실행"""
@@ -197,10 +210,12 @@ class KakaoTemplateWorkflow:
         logger.info("Analyzing user request...")
 
         try:
-            analysis_result = self.request_analyzer.analyze_request(state['user_request'])
-            state['analysis_result'] = analysis_result
+            with self.performance_monitor.measure_step("request_analysis",
+                                                     {"request_length": len(state['user_request'])}):
+                analysis_result = self.request_analyzer.analyze_request(state['user_request'])
+                state['analysis_result'] = analysis_result
 
-            logger.info(f"Request analysis completed: {analysis_result.get('business_type', 'Unknown')}")
+                logger.info(f"Request analysis completed: {analysis_result.get('business_type', 'Unknown')}")
 
         except Exception as e:
             error_msg = f"Request analysis failed: {str(e)}"
@@ -218,19 +233,21 @@ class KakaoTemplateWorkflow:
             business_type = analysis_result.get('business_type', '기타')
             service_type = analysis_result.get('service_type', '안내')
 
-            # 정책 컨텍스트 검색
-            query = f"{business_type} {service_type} 알림톡 템플릿 정책"
-            policy_context = self.policy_rag.get_relevant_policies(query, "template_generation")
+            with self.performance_monitor.measure_step("policy_retrieval",
+                                                     {"business_type": business_type, "service_type": service_type}):
+                # 정책 컨텍스트 검색
+                query = f"{business_type} {service_type} 알림톡 템플릿 정책"
+                policy_context = self.policy_rag.get_relevant_policies(query, "template_generation")
 
-            # 예시 검색
-            examples = self.policy_rag.search_policy_examples(business_type, service_type)
+                # 예시 검색
+                examples = self.policy_rag.search_policy_examples(business_type, service_type)
 
-            state['policy_context'] = {
-                'main_context': policy_context,
-                'examples': examples
-            }
+                state['policy_context'] = {
+                    'main_context': policy_context,
+                    'examples': examples
+                }
 
-            logger.info(f"Retrieved {policy_context.get('total_chunks', 0)} policy chunks")
+                logger.info(f"Retrieved {policy_context.get('total_chunks', 0)} policy chunks")
 
         except Exception as e:
             error_msg = f"Policy retrieval failed: {str(e)}"
@@ -246,20 +263,23 @@ class KakaoTemplateWorkflow:
         try:
             analysis_result = state.get('analysis_result', {})
             policy_context = state.get('policy_context', {}).get('main_context', {}).get('context', '')
+            iteration = state.get('iteration_count', 0)
 
-            # 이전 컴플라이언스 결과가 있으면 반영
-            previous_compliance = state.get('compliance_result', {})
-            if previous_compliance and state.get('iteration_count', 0) > 1:
-                analysis_result['previous_violations'] = previous_compliance.get('violations', [])
-                analysis_result['previous_recommendations'] = previous_compliance.get('recommendations', [])
+            with self.performance_monitor.measure_step("template_generation",
+                                                     {"iteration": iteration, "has_previous_feedback": iteration > 1}):
+                # 이전 컴플라이언스 결과가 있으면 반영
+                previous_compliance = state.get('compliance_result', {})
+                if previous_compliance and iteration > 1:
+                    analysis_result['previous_violations'] = previous_compliance.get('violations', [])
+                    analysis_result['previous_recommendations'] = previous_compliance.get('recommendations', [])
 
-            generated_template = self.template_generator.generate_template(
-                analysis_result, policy_context
-            )
+                generated_template = self.template_generator.generate_template(
+                    analysis_result, policy_context
+                )
 
-            state['generated_template'] = generated_template
+                state['generated_template'] = generated_template
 
-            logger.info("Template generation completed")
+                logger.info("Template generation completed")
 
         except Exception as e:
             error_msg = f"Template generation failed: {str(e)}"
@@ -275,14 +295,17 @@ class KakaoTemplateWorkflow:
         try:
             generated_template = state.get('generated_template', {})
             policy_context = state.get('policy_context', {}).get('main_context', {}).get('context', '')
+            template_length = len(generated_template.get('template_text', ''))
 
-            compliance_result = self.compliance_checker.check_compliance(
-                generated_template, policy_context
-            )
+            with self.performance_monitor.measure_step("compliance_check",
+                                                     {"template_length": template_length}):
+                compliance_result = self.compliance_checker.check_compliance(
+                    generated_template, policy_context
+                )
 
-            state['compliance_result'] = compliance_result
+                state['compliance_result'] = compliance_result
 
-            logger.info(f"Compliance check completed. Score: {compliance_result.get('compliance_score', 0)}")
+                logger.info(f"Compliance check completed. Score: {compliance_result.get('compliance_score', 0)}")
 
         except Exception as e:
             error_msg = f"Compliance check failed: {str(e)}"
@@ -298,19 +321,22 @@ class KakaoTemplateWorkflow:
         try:
             compliance_result = state.get('compliance_result', {})
             generated_template = state.get('generated_template', {})
+            violations_count = len(compliance_result.get('violations', []))
 
-            # 개선사항 적용
-            if compliance_result.get('recommendations'):
-                # 권장사항을 분석 결과에 추가하여 재생성 시 반영
-                analysis_result = state.get('analysis_result', {})
-                analysis_result['compliance_feedback'] = {
-                    'violations': compliance_result.get('violations', []),
-                    'recommendations': compliance_result.get('recommendations', []),
-                    'required_changes': compliance_result.get('required_changes', [])
-                }
-                state['analysis_result'] = analysis_result
+            with self.performance_monitor.measure_step("template_refinement",
+                                                     {"violations_count": violations_count}):
+                # 개선사항 적용
+                if compliance_result.get('recommendations'):
+                    # 권장사항을 분석 결과에 추가하여 재생성 시 반영
+                    analysis_result = state.get('analysis_result', {})
+                    analysis_result['compliance_feedback'] = {
+                        'violations': compliance_result.get('violations', []),
+                        'recommendations': compliance_result.get('recommendations', []),
+                        'required_changes': compliance_result.get('required_changes', [])
+                    }
+                    state['analysis_result'] = analysis_result
 
-            logger.info(f"Template refinement prepared for iteration {state.get('iteration_count', 0)}")
+                logger.info(f"Template refinement prepared for iteration {state.get('iteration_count', 0)}")
 
         except Exception as e:
             error_msg = f"Template refinement failed: {str(e)}"
@@ -360,18 +386,31 @@ class KakaoTemplateWorkflow:
                 'text': generated_template.get('template_text', ''),
                 'variables': generated_template.get('variables', []),
                 'button_suggestion': generated_template.get('button_suggestion', ''),
-                'metadata': generated_template.get('metadata', {})
+                'metadata': {
+                    'category_1': generated_template.get('metadata', {}).get('category_1', '서비스이용'),
+                    'category_2': generated_template.get('metadata', {}).get('category_2', '이용안내/공지'),
+                    'business_type': analysis_result.get('business_type', '기타'),
+                    'service_type': analysis_result.get('service_type', '안내'),
+                    'estimated_length': len(generated_template.get('template_text', '')),
+                    'variable_count': len(generated_template.get('variables', [])),
+                    'target_audience': generated_template.get('metadata', {}).get('target_audience', '일반'),
+                    'tone': generated_template.get('metadata', {}).get('tone', '정중한'),
+                    'generation_method': 'ai_generated'
+                }
             },
             'compliance': {
                 'is_compliant': compliance_result.get('is_compliant', False),
                 'score': compliance_result.get('compliance_score', 0),
                 'violations': compliance_result.get('violations', []),
+                'warnings': compliance_result.get('warnings', []),
                 'recommendations': compliance_result.get('recommendations', []),
-                'approval_probability': compliance_result.get('approval_probability', '낮음')
+                'approval_probability': compliance_result.get('approval_probability', '낮음'),
+                'required_changes': compliance_result.get('required_changes', [])
             },
             'analysis': {
-                'business_type': analysis_result.get('business_type', ''),
-                'service_type': analysis_result.get('service_type', ''),
+                'business_type': analysis_result.get('business_type', '기타'),
+                'service_type': analysis_result.get('service_type', '안내'),
+                'message_purpose': analysis_result.get('message_purpose', '사용자 요청 메시지'),
                 'estimated_category': analysis_result.get('estimated_category', {}),
                 'compliance_concerns': analysis_result.get('compliance_concerns', [])
             },
@@ -390,18 +429,31 @@ class KakaoTemplateWorkflow:
                 'text': '',
                 'variables': [],
                 'button_suggestion': '',
-                'metadata': {}
+                'metadata': {
+                    'category_1': '서비스이용',
+                    'category_2': '이용안내/공지',
+                    'business_type': '기타',
+                    'service_type': '안내',
+                    'estimated_length': 0,
+                    'variable_count': 0,
+                    'target_audience': '일반',
+                    'tone': '정중한',
+                    'generation_method': 'error'
+                }
             },
             'compliance': {
                 'is_compliant': False,
                 'score': 0,
                 'violations': [error_message],
+                'warnings': [],
                 'recommendations': ['시스템 오류로 인한 수동 검토 필요'],
-                'approval_probability': '낮음'
+                'approval_probability': '낮음',
+                'required_changes': []
             },
             'analysis': {
-                'business_type': '',
-                'service_type': '',
+                'business_type': '기타',
+                'service_type': '안내',
+                'message_purpose': '시스템 오류',
                 'estimated_category': {},
                 'compliance_concerns': [error_message]
             },

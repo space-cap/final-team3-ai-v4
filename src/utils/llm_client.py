@@ -2,10 +2,13 @@
 LLM Client for Claude API integration
 """
 import os
+import time
 from typing import Dict, List, Any, Optional
 from langchain_anthropic import ChatAnthropic
 from langchain.schema import HumanMessage, SystemMessage
 import logging
+from .optimized_prompts import OptimizedPrompts
+from .performance_cache import SpecificCaches
 
 logger = logging.getLogger(__name__)
 
@@ -47,33 +50,37 @@ class ClaudeLLMClient:
             return ""
 
     def analyze_user_request(self, user_request: str) -> Dict[str, Any]:
-        """Analyze user request and extract structured information"""
-        system_prompt = """
-당신은 카카오 알림톡 템플릿 요구사항 분석 전문가입니다.
-사용자의 요청을 분석하여 다음 정보를 JSON 형태로 추출해주세요:
+        """Analyze user request with caching and optimized prompts"""
 
-- business_type: 비즈니스 유형 (교육, 서비스업, 기타 등)
-- service_type: 서비스 유형 (공지/안내, 신청, 피드백 등)
-- message_purpose: 메시지 목적 (회원가입, 주문확인, 배송안내 등)
-- target_audience: 대상 고객층
-- required_variables: 필요한 변수들 (#{변수명} 형태)
-- tone: 톤앤매너 (정중한, 친근한, 공식적인 등)
-- urgency: 긴급도 (높음, 보통, 낮음)
-- estimated_category: 예상 카테고리
+        # 캐시 확인
+        cached_result = SpecificCaches.get_request_analysis(user_request)
+        if cached_result:
+            logger.info("Using cached request analysis")
+            return cached_result
 
-응답은 반드시 유효한 JSON 형태로만 제공해주세요.
-"""
+        start_time = time.time()
 
-        user_prompt = f"다음 사용자 요청을 분석해주세요:\n\n{user_request}"
+        # 최적화된 프롬프트 사용
+        system_prompt = OptimizedPrompts.get_request_analysis_prompt()
+        user_prompt = f"요청: {user_request}"
 
         try:
             response = self.generate_response(system_prompt, user_prompt)
             # JSON 파싱 시도
             import json
-            return json.loads(response)
-        except:
+            result = json.loads(response)
+
+            # 캐시에 저장
+            SpecificCaches.set_request_analysis(user_request, result)
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"Request analysis completed in {elapsed_time:.2f}s (optimized)")
+
+            return result
+        except Exception as e:
+            logger.error(f"Error parsing request analysis: {e}")
             # 파싱 실패 시 기본값 반환
-            return {
+            result = {
                 "business_type": "기타",
                 "service_type": "공지/안내",
                 "message_purpose": "일반 안내",
@@ -84,130 +91,111 @@ class ClaudeLLMClient:
                 "estimated_category": "서비스이용"
             }
 
+            # 기본값도 캐시에 저장
+            SpecificCaches.set_request_analysis(user_request, result)
+            return result
+
     def generate_template(self, request_info: Dict[str, Any], policy_context: str,
                          similar_templates: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Generate KakaoTalk template based on analysis and context"""
+        """Generate KakaoTalk template with optimization and caching"""
 
-        system_prompt = f"""
-당신은 카카오 알림톡 템플릿 생성 전문가입니다.
-주어진 정보를 바탕으로 카카오 정책에 완벽히 부합하는 알림톡 템플릿을 생성해주세요.
+        # 캐시 키 생성
+        analysis_key = str(hash(str(request_info)))
+        policy_key = str(hash(policy_context[:500]))  # 정책 컨텍스트 일부만 해시
 
-**정책 컨텍스트:**
-{policy_context}
+        # 캐시 확인
+        cached_result = SpecificCaches.get_template_generation(analysis_key, policy_key)
+        if cached_result:
+            logger.info("Using cached template generation")
+            return cached_result
 
-**참고할 승인된 템플릿들:**
-{self._format_templates_for_prompt(similar_templates)}
+        start_time = time.time()
 
-**생성 규칙:**
-1. 반드시 정보성 메시지여야 함
-2. 광고성 내용 금지
-3. 변수는 #{{변수명}} 형태로 사용
-4. 메시지는 1000자 이내
-5. 정중한 톤 유지
-6. 필수 정보만 포함
-7. 버튼 사용 시 명확한 설명 포함
+        # 정책 요약 생성
+        policy_summary = self._summarize_policy(policy_context)
 
-응답 형태:
-{{
-  "template_text": "생성된 템플릿 내용",
-  "variables": ["변수1", "변수2"],
-  "metadata": {{
-    "category_1": "분류1",
-    "category_2": "분류2",
-    "business_type": "비즈니스 유형",
-    "service_type": "서비스 유형",
-    "estimated_length": 템플릿 길이,
-    "compliance_notes": "준수 사항 설명"
-  }},
-  "button_suggestion": "제안 버튼명 (선택사항)",
-  "compliance_score": 95
-}}
-"""
+        # 최적화된 프롬프트 사용
+        business_type = request_info.get('business_type', '기타')
+        service_type = request_info.get('service_type', '안내')
+        user_request = request_info.get('message_purpose', '일반 안내')
 
-        user_prompt = f"""
-다음 요구사항에 맞는 알림톡 템플릿을 생성해주세요:
+        system_prompt = OptimizedPrompts.get_template_generation_prompt(
+            business_type, service_type, user_request, policy_summary
+        )
 
-**요구사항:**
-- 비즈니스 유형: {request_info.get('business_type', '기타')}
-- 서비스 유형: {request_info.get('service_type', '공지/안내')}
-- 메시지 목적: {request_info.get('message_purpose', '일반 안내')}
-- 대상 고객: {request_info.get('target_audience', '고객')}
-- 필요 변수: {request_info.get('required_variables', ['수신자명'])}
-- 톤앤매너: {request_info.get('tone', '정중한')}
-
-사용자 원본 요청: {request_info.get('original_request', '')}
-"""
+        user_prompt = f"""대상: {request_info.get('target_audience', '고객')}
+톤: {request_info.get('tone', '정중한')}
+변수: {request_info.get('required_variables', ['수신자명'])}"""
 
         try:
             response = self.generate_response(system_prompt, user_prompt)
             import json
-            return json.loads(response)
-        except:
-            return {
+            result = json.loads(response)
+
+            # 캐시에 저장
+            SpecificCaches.set_template_generation(analysis_key, policy_key, result)
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"Template generation completed in {elapsed_time:.2f}s (optimized)")
+
+            return result
+        except Exception as e:
+            logger.error(f"Error generating template: {e}")
+            result = {
                 "template_text": "템플릿 생성에 실패했습니다.",
                 "variables": [],
                 "metadata": {},
                 "compliance_score": 0
             }
+            return result
 
     def check_compliance(self, template_text: str, policy_context: str) -> Dict[str, Any]:
-        """Check template compliance against policies"""
+        """Check template compliance with optimization"""
 
-        system_prompt = f"""
-당신은 카카오 알림톡 정책 준수 검증 전문가입니다.
-주어진 템플릿이 카카오 정책을 준수하는지 철저히 검증해주세요.
+        start_time = time.time()
 
-**정책 기준:**
-{policy_context}
-
-검증 항목:
-1. 정보성 메시지 여부
-2. 광고성 내용 포함 여부
-3. 블랙리스트 위반 여부
-4. 변수 사용 규칙 준수
-5. 메시지 길이 적절성
-6. 필수 안내사항 포함 여부
-
-응답 형태:
-{{
-  "is_compliant": true/false,
-  "compliance_score": 0-100,
-  "violations": ["위반사항1", "위반사항2"],
-  "recommendations": ["개선사항1", "개선사항2"],
-  "approval_probability": "높음/보통/낮음",
-  "required_changes": ["필수 수정사항1", "필수 수정사항2"]
-}}
-"""
-
-        user_prompt = f"다음 템플릿을 검증해주세요:\n\n{template_text}"
+        # 최적화된 프롬프트 사용
+        system_prompt = OptimizedPrompts.get_compliance_check_prompt(template_text)
 
         try:
-            response = self.generate_response(system_prompt, user_prompt)
+            response = self.generate_response(system_prompt, "")
             import json
-            return json.loads(response)
-        except:
+            result = json.loads(response)
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"Compliance check completed in {elapsed_time:.2f}s (optimized)")
+
+            return result
+        except Exception as e:
+            logger.error(f"Error checking compliance: {e}")
             return {
                 "is_compliant": False,
                 "compliance_score": 0,
-                "violations": ["검증 실패"],
-                "recommendations": ["전문가 검토 필요"],
+                "violations": ["컴플라이언스 검사 실패"],
+                "recommendations": ["수동 검토 필요"],
                 "approval_probability": "낮음",
-                "required_changes": ["수동 검토 필요"]
+                "required_changes": []
             }
 
+    def _summarize_policy(self, policy_context: str) -> str:
+        """정책 컨텍스트를 요약"""
+        if len(policy_context) <= 200:
+            return policy_context
+
+        # 간단한 요약 - 처음 200자 + 핵심 키워드
+        summary = policy_context[:200]
+        keywords = ["1000자", "정보성", "#{변수}", "광고금지"]
+        return summary + " 핵심: " + ", ".join(keywords)
+
     def _format_templates_for_prompt(self, templates: List[Dict[str, Any]]) -> str:
-        """Format templates for prompt context"""
+        """템플릿을 프롬프트용으로 포맷"""
         if not templates:
-            return "참고할 템플릿이 없습니다."
+            return "참고 템플릿 없음"
 
         formatted = []
-        for i, template in enumerate(templates[:3]):  # 최대 3개만
-            formatted.append(f"""
-템플릿 {i+1}:
-내용: {template.get('text', '')}
-카테고리: {template.get('metadata', {}).get('category_1', '')} > {template.get('metadata', {}).get('category_2', '')}
-비즈니스 유형: {template.get('metadata', {}).get('business_type', '')}
-""")
+        for i, template in enumerate(templates[:2]):  # 최대 2개만
+            text = template.get('text', '')[:100]  # 100자로 제한
+            formatted.append(f"{i+1}. {text}...")
 
         return "\n".join(formatted)
 
