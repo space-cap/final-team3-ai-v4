@@ -18,27 +18,27 @@ def load_environment():
 
         if env_file.exists():
             load_dotenv(env_file)
-            print(f"✅ 환경 변수 로드: {env_file}")
+            print(f"[OK] 환경 변수 로드: {env_file}")
         else:
-            print("⚠️ .env 파일이 없습니다. .env.example을 참고하여 생성해주세요.")
+            print("[WARNING] .env 파일이 없습니다. .env.example을 참고하여 생성해주세요.")
     except ImportError:
-        print("⚠️ python-dotenv가 설치되지 않았습니다.")
+        print("[WARNING] python-dotenv가 설치되지 않았습니다.")
         print("   pip install python-dotenv로 설치해주세요.")
 
 def check_api_key():
     """API 키 확인"""
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        print("❌ ANTHROPIC_API_KEY가 설정되지 않았습니다.")
+        print("[ERROR] ANTHROPIC_API_KEY가 설정되지 않았습니다.")
         print("   .env 파일에 ANTHROPIC_API_KEY=your_actual_key_here 를 추가해주세요.")
         return False
 
     if api_key == "your_claude_api_key_here":
-        print("❌ ANTHROPIC_API_KEY가 예시 값으로 설정되어 있습니다.")
+        print("[ERROR] ANTHROPIC_API_KEY가 예시 값으로 설정되어 있습니다.")
         print("   실제 Claude API 키로 변경해주세요.")
         return False
 
-    print("✅ ANTHROPIC_API_KEY가 설정되어 있습니다.")
+    print("[OK] ANTHROPIC_API_KEY가 설정되어 있습니다.")
     return True
 
 def create_directories():
@@ -51,11 +51,11 @@ def create_directories():
     for directory in directories:
         dir_path = project_root / directory
         dir_path.mkdir(exist_ok=True)
-        print(f"📁 디렉토리 생성/확인: {directory}")
+        print(f"[FOLDER] 디렉토리 생성/확인: {directory}")
 
 def main():
     """메인 실행 함수"""
-    print("🚀 카카오 알림톡 템플릿 자동 생성 서비스 시작")
+    print("카카오 알림톡 템플릿 자동 생성 서비스 시작")
     print("=" * 60)
 
     # 환경 설정
@@ -63,7 +63,7 @@ def main():
 
     # API 키 확인
     if not check_api_key():
-        print("\n❌ 서버를 시작할 수 없습니다. API 키를 설정해주세요.")
+        print("\n[ERROR] 서버를 시작할 수 없습니다. API 키를 설정해주세요.")
         return
 
     # 디렉토리 생성
@@ -75,15 +75,15 @@ def main():
     reload = os.getenv("ENVIRONMENT", "production") == "development"
     log_level = os.getenv("LOG_LEVEL", "info").lower()
 
-    print(f"\n🌐 서버 설정:")
+    print(f"\n[CONFIG] 서버 설정:")
     print(f"   - 호스트: {host}")
     print(f"   - 포트: {port}")
     print(f"   - 개발 모드: {reload}")
     print(f"   - 로그 레벨: {log_level}")
 
-    print(f"\n📖 API 문서: http://localhost:{port}/docs")
-    print(f"🔍 헬스체크: http://localhost:{port}/health")
-    print(f"📊 시스템 통계: http://localhost:{port}/stats")
+    print(f"\n[INFO] API 문서: http://localhost:{port}/docs")
+    print(f"[INFO] 헬스체크: http://localhost:{port}/health")
+    print(f"[INFO] 시스템 통계: http://localhost:{port}/stats")
 
     print("\n" + "=" * 60)
     print("서버를 시작합니다...")
@@ -101,9 +101,9 @@ def main():
             access_log=True
         )
     except KeyboardInterrupt:
-        print("\n\n🛑 서버가 중지되었습니다.")
+        print("\n\n[STOP] 서버가 중지되었습니다.")
     except Exception as e:
-        print(f"\n❌ 서버 실행 오류: {e}")
+        print(f"\n[ERROR] 서버 실행 오류: {e}")
 
 if __name__ == "__main__":
     main()
